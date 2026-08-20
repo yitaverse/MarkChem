@@ -39,7 +39,7 @@ export function TocPane({ content, onNavigate }: TocPaneProps) {
   }, [content]);
 
   return (
-    <div className="w-48 h-full bg-slate-panels border-l border-slate-borderDark flex flex-col shrink-0 overflow-y-auto p-4 hidden lg:flex">
+    <div data-print-hide className="w-48 h-full bg-slate-panels border-l border-slate-borderDark flex flex-col shrink-0 overflow-y-auto p-4 hidden lg:flex">
       <div className="flex items-center gap-2 mb-6 text-slate-textDark">
         <List size={16} className="text-cyan-accent" />
         <h2 className="font-semibold tracking-wider text-xs uppercase">Outline</h2>
