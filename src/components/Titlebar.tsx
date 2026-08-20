@@ -12,6 +12,7 @@ export function Titlebar() {
   return (
     <div 
       data-tauri-drag-region 
+      data-print-hide
       className="h-8 bg-slate-panels border-b border-slate-borderDark flex justify-between items-center shrink-0 select-none z-50 relative"
     >
       <div data-tauri-drag-region className="flex-1 flex items-center px-4 h-full">

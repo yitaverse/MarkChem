@@ -9,6 +9,7 @@ import 'katex/dist/katex.min.css';
 import type { ViewMode } from '../App';
 import { Columns, Maximize, Eye } from 'lucide-react';
 import { MermaidRenderer } from './MermaidRenderer';
+import { slugify, extractTextFromChildren, generateTOC } from '../utils/printTOC';
 
 interface SmilesCanvasProps {
   smiles: string;
@@ -96,9 +97,18 @@ export function PreviewPane({ content, isDark, viewMode, setViewMode }: PreviewP
         </code>
       );
     },
-    h1: ({node, ...props}: any) => <h1 className="text-3xl font-bold mb-4 mt-6 text-cyan-accent" {...props} />,
-    h2: ({node, ...props}: any) => <h2 className="text-2xl font-semibold mb-3 mt-5 border-b border-slate-borderDark pb-2" {...props} />,
-    h3: ({node, ...props}: any) => <h3 className="text-xl font-semibold mb-3 mt-4 text-cyan-accent" {...props} />,
+    h1: ({node, children, ...props}: any) => {
+      const text = extractTextFromChildren(children);
+      return <h1 id={slugify(text)} className="text-3xl font-bold mb-4 mt-6 text-cyan-accent" {...props}>{children}</h1>;
+    },
+    h2: ({node, children, ...props}: any) => {
+      const text = extractTextFromChildren(children);
+      return <h2 id={slugify(text)} className="text-2xl font-semibold mb-3 mt-5 border-b border-slate-borderDark pb-2" {...props}>{children}</h2>;
+    },
+    h3: ({node, children, ...props}: any) => {
+      const text = extractTextFromChildren(children);
+      return <h3 id={slugify(text)} className="text-xl font-semibold mb-3 mt-4 text-cyan-accent" {...props}>{children}</h3>;
+    },
     p: ({node, ...props}: any) => <p className="mb-4 leading-relaxed" {...props} />,
     ul: ({node, ...props}: any) => <ul className="list-disc list-inside mb-4 space-y-1" {...props} />,
     ol: ({node, ...props}: any) => <ol className="list-decimal list-inside mb-4 space-y-1" {...props} />,
@@ -135,10 +145,11 @@ export function PreviewPane({ content, isDark, viewMode, setViewMode }: PreviewP
   };
 
   const htmlContent = renderChemAndMath(content);
+  const tocHTML = generateTOC(content);
 
   return (
-    <div className="flex-1 flex flex-col h-full overflow-hidden bg-slate-light dark:bg-obsidian text-slate-dark dark:text-slate-light">
-      <div className="flex items-center justify-between p-2 bg-slate-200 dark:bg-slate-panels border-b border-slate-borderDark shrink-0">
+    <div data-print-expand className="flex-1 flex flex-col h-full overflow-hidden bg-slate-light dark:bg-obsidian text-slate-dark dark:text-slate-light">
+      <div data-print-hide className="flex items-center justify-between p-2 bg-slate-200 dark:bg-slate-panels border-b border-slate-borderDark shrink-0">
         <span className="text-xs font-semibold px-2 uppercase tracking-widest text-slate-500">Live Preview</span>
         <div className="flex items-center gap-1">
           <button 
@@ -165,6 +176,9 @@ export function PreviewPane({ content, isDark, viewMode, setViewMode }: PreviewP
         </div>
       </div>
       <div className="flex-1 h-full overflow-y-auto p-8 font-sans markdown-preview preview-pane-container prose prose-invert max-w-none">
+        {tocHTML && (
+          <div className="print-only" dangerouslySetInnerHTML={{ __html: tocHTML }} />
+        )}
         <ReactMarkdown 
           remarkPlugins={[remarkGfm]} 
           rehypePlugins={[rehypeRaw]}

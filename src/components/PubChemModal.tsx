@@ -24,7 +24,7 @@ export function PubChemModal({ isOpen, onClose, onInsert }: PubChemModalProps) {
     setResults(null);
 
     try {
-      const response = await fetch(`https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/${encodeURIComponent(query)}/property/IsomericSMILES,MolecularFormula,MolecularWeight,IUPACName/JSON`);
+      const response = await fetch(`https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/${encodeURIComponent(query)}/property/IsomericSMILES,CanonicalSMILES,SMILES,MolecularFormula,MolecularWeight,IUPACName/JSON`);
       
       if (!response.ok) {
         throw new Error('Compound not found or network error');
@@ -32,7 +32,9 @@ export function PubChemModal({ isOpen, onClose, onInsert }: PubChemModalProps) {
 
       const data = await response.json();
       if (data.PropertyTable?.Properties?.length > 0) {
-        setResults(data.PropertyTable.Properties[0]);
+        const props = data.PropertyTable.Properties[0];
+        props.SMILES = props.IsomericSMILES || props.CanonicalSMILES || props.SMILES || '';
+        setResults(props);
       } else {
         throw new Error('No data available for this compound');
       }
@@ -114,7 +116,7 @@ export function PubChemModal({ isOpen, onClose, onInsert }: PubChemModalProps) {
               
               <div className="mt-2 text-xs text-slate-500 uppercase tracking-wider">SMILES</div>
               <div className="p-2 bg-slate-900 rounded font-mono text-xs text-slate-300 break-all border border-slate-800">
-                {results.IsomericSMILES}
+                {results.SMILES}
               </div>
 
               <div className="mt-4 flex justify-end">

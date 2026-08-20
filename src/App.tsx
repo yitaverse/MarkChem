@@ -220,9 +220,9 @@ function App() {
   const toggleTheme = () => setIsDark(!isDark);
 
   return (
-    <div className="flex flex-col w-full h-screen overflow-hidden text-slate-dark dark:text-slate-light">
+    <div data-print-expand className="flex flex-col w-full h-screen overflow-hidden text-slate-dark dark:text-slate-light">
       <Titlebar />
-      <div className="flex flex-1 overflow-hidden">
+      <div data-print-expand className="flex flex-1 overflow-hidden">
         <Sidebar 
           onFileOpen={handleFileOpen}
           onFileSave={handleFileSave}
@@ -233,10 +233,10 @@ function App() {
           isDark={isDark}
           toggleTheme={toggleTheme}
         />
-        <div className="flex flex-col flex-1 overflow-hidden relative">
+        <div data-print-expand className="flex flex-col flex-1 overflow-hidden relative">
         {/* TABS BAR */}
         {openTabs.length > 0 && (
-          <div className="flex items-center overflow-x-auto bg-slate-200 dark:bg-slate-panels border-b border-slate-borderDark shrink-0">
+          <div data-print-hide className="flex items-center overflow-x-auto bg-slate-200 dark:bg-slate-panels border-b border-slate-borderDark shrink-0">
             {openTabs.map(tab => {
               const isDirty = (filesContent[tab.path] || '') !== (savedFilesContent[tab.path] || '');
               return (
@@ -262,7 +262,7 @@ function App() {
           </div>
         )}
 
-        <div className="flex flex-1 overflow-hidden">
+        <div data-print-expand className="flex flex-1 overflow-hidden">
           <div className={`flex-1 overflow-hidden flex flex-col ${viewMode === 'preview' ? 'hidden' : 'block'}`}>
             <EditorPane 
               value={currentContent} 
@@ -273,7 +273,7 @@ function App() {
               scrollToLine={scrollToLine}
             />
           </div>
-          <div className={`flex-1 overflow-hidden flex flex-col ${viewMode === 'editor' ? 'hidden' : 'block'}`}>
+          <div data-print-expand className={`flex-1 overflow-hidden flex flex-col ${viewMode === 'editor' ? 'hidden' : 'block'}`}>
             <PreviewPane 
               content={debouncedContent} 
               isDark={isDark} 
