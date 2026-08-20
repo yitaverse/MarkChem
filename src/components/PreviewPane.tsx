@@ -138,7 +138,7 @@ export function PreviewPane({ content, isDark, viewMode, setViewMode }: PreviewP
 
   return (
     <div className="flex-1 flex flex-col h-full overflow-hidden bg-slate-light dark:bg-obsidian text-slate-dark dark:text-slate-light">
-      <div className="flex items-center justify-between p-2 bg-slate-200 dark:bg-slate-panels border-b border-slate-borderDark shrink-0">
+      <div data-print-hide className="flex items-center justify-between p-2 bg-slate-200 dark:bg-slate-panels border-b border-slate-borderDark shrink-0">
         <span className="text-xs font-semibold px-2 uppercase tracking-widest text-slate-500">Live Preview</span>
         <div className="flex items-center gap-1">
           <button 

@@ -25,30 +25,39 @@ body {
 
 /* Perfect PDF Print Export Styles */
 @media print {
-  /* Hide UI elements */
-  .w-64.bg-slate-panels, 
+  /* Hide all UI chrome */
+  [data-print-hide] {
+    display: none !important;
+  }
+
+  /* Hide CodeMirror editor wrapper (not marked with data-print-hide to avoid hiding it in non-print contexts) */
   .flex-1.h-full.font-mono {
     display: none !important;
   }
-  
-  /* Reset container for printing */
+
+  /* Reset preview container for printing */
   .preview-pane-container {
     width: 100% !important;
     max-width: none !important;
     height: auto !important;
     overflow: visible !important;
-    padding: 0 !important;
+    padding: 2rem !important;
     background: white !important;
     color: black !important;
   }
-  
+
+  /* Clean white background for print */
+  body {
+    background: white !important;
+  }
+
   /* Fix canvas (SMILES) and Math sizes */
   canvas {
     max-width: 100% !important;
     page-break-inside: avoid;
   }
-  
-  .katex-block-wrapper, 
+
+  .katex-block-wrapper,
   pre {
     page-break-inside: avoid;
   }

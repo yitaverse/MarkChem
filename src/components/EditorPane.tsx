@@ -266,7 +266,7 @@ export function EditorPane({ value, onChange, isDark, viewMode, setViewMode, scr
 
   const handleInsertPubChem = (data: any) => {
     setIsPubChemOpen(false);
-    const text = `**${data.name}** (MW: ${data.MolecularWeight} g/mol, Formula: ${data.MolecularFormula})\n\n\`\`\`chem\n${data.IsomericSMILES}\n\`\`\`\n`;
+    const text = `**${data.name}** (MW: ${data.MolecularWeight} g/mol, Formula: ${data.MolecularFormula})\n\n\`\`\`chem\n${data.SMILES}\n\`\`\`\n`;
     insertSnippet(text, text.length);
   };
 
@@ -288,7 +288,7 @@ export function EditorPane({ value, onChange, isDark, viewMode, setViewMode, scr
         onInsert={handleInsertPubChem}
       />
       {/* Editor Toolbar */}
-      <div className="flex items-center justify-between p-2 bg-slate-200 dark:bg-slate-panels border-b border-slate-borderDark shrink-0">
+      <div data-print-hide className="flex items-center justify-between p-2 bg-slate-200 dark:bg-slate-panels border-b border-slate-borderDark shrink-0">
         <div className="flex items-center gap-2">
           <button
             onClick={() => insertSnippet('$\\ce{}$', 5)}

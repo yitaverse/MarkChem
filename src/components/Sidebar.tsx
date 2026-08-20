@@ -84,7 +84,7 @@ export function Sidebar({ onFileOpen, onFileSave, onExportMd, onExportDocx, onTo
   };
 
   return (
-    <div className="w-64 h-full bg-slate-panels border-r border-slate-borderDark flex flex-col p-4 text-sm text-slate-textDark shrink-0 overflow-y-auto">
+    <div data-print-hide className="w-64 h-full bg-slate-panels border-r border-slate-borderDark flex flex-col p-4 text-sm text-slate-textDark shrink-0 overflow-y-auto">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-cyan-accent font-bold text-lg tracking-wide">MarkChem</h1>
         <button 

@@ -236,7 +236,7 @@ function App() {
         <div className="flex flex-col flex-1 overflow-hidden relative">
         {/* TABS BAR */}
         {openTabs.length > 0 && (
-          <div className="flex items-center overflow-x-auto bg-slate-200 dark:bg-slate-panels border-b border-slate-borderDark shrink-0">
+          <div data-print-hide className="flex items-center overflow-x-auto bg-slate-200 dark:bg-slate-panels border-b border-slate-borderDark shrink-0">
             {openTabs.map(tab => {
               const isDirty = (filesContent[tab.path] || '') !== (savedFilesContent[tab.path] || '');
               return (
