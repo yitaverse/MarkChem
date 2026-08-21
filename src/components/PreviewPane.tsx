@@ -125,7 +125,7 @@ export function PreviewPane({ content, isDark, viewMode, setViewMode }: PreviewP
     let processed = text.replace(/\$\$\s*([\s\S]*?)\s*\$\$/g, (match, formula) => {
       try {
         const rendered = katex.renderToString(formula, { displayMode: true, trust: true, strict: false });
-        return `<div class="katex-block-wrapper my-4 text-center overflow-x-auto">${rendered}</div>`;
+        return `<div class="katex-block-wrapper not-prose my-4 overflow-x-auto">${rendered}</div>`;
       } catch (err: any) {
         return `<div class="text-red-500 font-mono my-4">${err.message}</div>`;
       }

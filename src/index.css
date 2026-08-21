@@ -132,10 +132,16 @@ body {
 
   /* KaTeX block: constrain to page width and center properly */
   .katex-block-wrapper {
+    width: 100% !important;
     max-width: 100% !important;
     overflow-x: hidden !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
+    margin: 1rem auto !important;
+    text-align: center !important;
+  }
+
+  .katex-block-wrapper .katex-display {
+    margin: 0 auto !important;
+    text-align: center !important;
   }
 
   .katex-block-wrapper,
