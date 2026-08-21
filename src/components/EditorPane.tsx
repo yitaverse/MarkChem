@@ -35,6 +35,7 @@ interface EditorPaneProps {
   onChange: (val: string) => void;
   isDark: boolean;
   scrollToLine?: number | null;
+  headerRef?: React.RefObject<HTMLDivElement | null>;
 }
 
 // Slash Command Menu definitions
@@ -91,7 +92,7 @@ const slashCommandCompletions = (context: CompletionContext) => {
   };
 };
 
-export function EditorPane({ value, onChange, isDark, scrollToLine }: EditorPaneProps) {
+export function EditorPane({ value, onChange, isDark, scrollToLine, headerRef }: EditorPaneProps) {
   const editorRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<EditorView | null>(null);
   const [isFocusMode, setIsFocusMode] = useState(false);
@@ -285,7 +286,7 @@ export function EditorPane({ value, onChange, isDark, scrollToLine }: EditorPane
         onInsert={handleInsertPubChem}
       />
       {/* Editor Toolbar */}
-      <div data-print-hide className="flex items-center justify-between p-2 bg-slate-200 dark:bg-slate-panels border-b border-slate-borderDark shrink-0">
+      <div ref={headerRef} data-print-hide className="flex items-center justify-between p-2 bg-slate-200 dark:bg-slate-panels border-b border-slate-borderDark shrink-0">
         <div className="flex items-center gap-2">
           <button
             onClick={() => insertSnippet('$\\ce{}$', 5)}

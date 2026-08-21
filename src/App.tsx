@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Sidebar } from "./components/Sidebar";
 import { EditorPane } from "./components/EditorPane";
 import { PreviewPane } from "./components/PreviewPane";
@@ -56,6 +56,23 @@ function App() {
   const [isAIOpen, setIsAIOpen] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('split');
   const [scrollToLine, setScrollToLine] = useState<number | null>(null);
+  const [headerHeight, setHeaderHeight] = useState<number>(0);
+  const editorHeaderRef = useRef<HTMLDivElement>(null);
+
+  const syncHeaderHeight = useCallback(() => {
+    if (editorHeaderRef.current) {
+      setHeaderHeight(editorHeaderRef.current.offsetHeight);
+    }
+  }, []);
+
+  useEffect(() => {
+    const el = editorHeaderRef.current;
+    if (!el) return;
+    syncHeaderHeight();
+    const observer = new ResizeObserver(syncHeaderHeight);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [syncHeaderHeight, viewMode]);
 
   useEffect(() => {
     if (isDark) {
@@ -271,12 +288,14 @@ function App() {
               onChange={handleContentChange} 
               isDark={isDark} 
               scrollToLine={scrollToLine}
+              headerRef={editorHeaderRef}
             />
           </div>
           <div data-print-expand className={`flex-1 overflow-hidden flex flex-col ${viewMode === 'editor' ? 'hidden' : 'block'}`}>
             <PreviewPane 
               content={debouncedContent} 
-              isDark={isDark} 
+              isDark={isDark}
+              headerHeight={headerHeight}
             />
           </div>
           <TocPane content={currentContent} onNavigate={handleNavigate} />
