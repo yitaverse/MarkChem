@@ -337,14 +337,14 @@ export function EditorPane({ value, onChange, isDark, scrollToLine, headerRef }:
         <div className="flex items-center gap-1">
           <button 
             onClick={() => setIsTypewriterMode(!isTypewriterMode)}
-            className={`p-1.5 rounded transition-colors ${isTypewriterMode ? 'bg-cyan-accent text-obsidian' : 'text-slate-dark dark:text-slate-light hover:bg-slate-300 dark:hover:bg-slate-600 hover:text-cyan-accent'}`}
+            className={`p-1.5 rounded transition-colors ${isTypewriterMode ? 'bg-cyan-accent text-obsidian' : 'text-slate-dark dark:text-slate-light hover:bg-slate-300 dark:hover:bg-slate-600'}`}
             title="Toggle Typewriter Mode"
           >
             <Type size={16} />
           </button>
           <button 
             onClick={() => setIsFocusMode(!isFocusMode)}
-            className={`p-1.5 rounded transition-colors ${isFocusMode ? 'bg-cyan-accent text-obsidian' : 'text-slate-dark dark:text-slate-light hover:bg-slate-300 dark:hover:bg-slate-600 hover:text-cyan-accent'}`}
+            className={`p-1.5 rounded transition-colors ${isFocusMode ? 'bg-cyan-accent text-obsidian' : 'text-slate-dark dark:text-slate-light hover:bg-slate-300 dark:hover:bg-slate-600'}`}
             title="Toggle Focus Mode"
           >
             <Focus size={16} />
