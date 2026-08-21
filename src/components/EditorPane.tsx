@@ -309,6 +309,13 @@ export function EditorPane({ value, onChange, isDark, scrollToLine }: EditorPane
             SMILES ```chem
           </button>
           <button
+            onClick={() => insertSnippet('<span style="display: block; page-break-before: always;"></span>')}
+            className="px-3 py-1 text-xs font-semibold rounded bg-white dark:bg-obsidian border border-slate-borderDark hover:border-cyan-accent text-slate-dark dark:text-slate-light transition-colors"
+            title="Insert Page Break for PDF"
+          >
+            Pagebreak ↵
+          </button>
+          <button
             onClick={() => setIsDrawerOpen(true)}
             className="flex items-center gap-1 px-3 py-1 text-xs font-semibold rounded bg-cyan-accent text-obsidian hover:bg-cyan-400 transition-colors"
             title="Draw Molecule Visually"
@@ -323,13 +330,6 @@ export function EditorPane({ value, onChange, isDark, scrollToLine }: EditorPane
           >
             <FlaskConical size={14} />
             Search
-          </button>
-          <button
-            onClick={() => insertSnippet('<span style="display: block; page-break-before: always;"></span>')}
-            className="px-3 py-1 text-xs font-semibold rounded bg-white dark:bg-obsidian border border-slate-borderDark hover:border-cyan-accent text-slate-dark dark:text-slate-light transition-colors"
-            title="Insert Page Break for PDF"
-          >
-            ↵ Pagebreak
           </button>
         </div>
         

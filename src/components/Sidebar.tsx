@@ -91,31 +91,31 @@ export function Sidebar({ onFileOpen, onFileSave, onExportMd, onExportDocx, onTo
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-cyan-accent font-bold text-lg tracking-wide">MarkChem</h1>
         <div className="flex items-center gap-1">
+          <div className="w-px h-4 bg-slate-borderDark mr-1"></div>
           <button 
             onClick={() => setViewMode('editor')}
-            className={`p-1 rounded transition-colors ${viewMode === 'editor' ? 'bg-obsidian text-cyan-accent' : 'hover:bg-obsidian text-slate-dark dark:text-slate-light'}`}
+            className={`p-1 rounded transition-colors ${viewMode === 'editor' ? 'bg-cyan-accent/20 text-cyan-accent' : 'text-cyan-accent hover:bg-cyan-accent/10'}`}
             title="Editor Only"
           >
             <Maximize size={16} />
           </button>
           <button 
             onClick={() => setViewMode('split')}
-            className={`p-1 rounded transition-colors ${viewMode === 'split' ? 'bg-obsidian text-cyan-accent' : 'hover:bg-obsidian text-slate-dark dark:text-slate-light'}`}
+            className={`p-1 rounded transition-colors ${viewMode === 'split' ? 'bg-cyan-accent/20 text-cyan-accent' : 'text-cyan-accent hover:bg-cyan-accent/10'}`}
             title="Split View"
           >
             <Columns size={16} />
           </button>
           <button 
             onClick={() => setViewMode('preview')}
-            className={`p-1 rounded transition-colors ${viewMode === 'preview' ? 'bg-obsidian text-cyan-accent' : 'hover:bg-obsidian text-slate-dark dark:text-slate-light'}`}
+            className={`p-1 rounded transition-colors ${viewMode === 'preview' ? 'bg-cyan-accent/20 text-cyan-accent' : 'text-cyan-accent hover:bg-cyan-accent/10'}`}
             title="Preview Only"
           >
             <Eye size={16} />
           </button>
-          <div className="w-px h-4 bg-slate-borderDark mx-1"></div>
           <button 
             onClick={toggleTheme} 
-            className="p-1 hover:bg-obsidian rounded transition-colors"
+            className="p-1 text-cyan-accent hover:bg-cyan-accent/10 rounded transition-colors"
             title="Toggle Theme"
           >
             {isDark ? <Sun size={18} /> : <Moon size={18} />}
