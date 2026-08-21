@@ -130,6 +130,14 @@ body {
     page-break-after: auto;
   }
 
+  /* KaTeX block: constrain to page width and center properly */
+  .katex-block-wrapper {
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
   .katex-block-wrapper,
   pre {
     page-break-inside: avoid;
