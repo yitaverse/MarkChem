@@ -233,7 +233,7 @@ export function Sidebar({ onFileOpen, onFileSave, onExportMd, onExportDocx, onTo
           onClick={handlePrint}
           className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded bg-cyan-accent text-obsidian hover:bg-cyan-400 transition-colors shrink-0"
         >
-          Export
+          PDF
         </button>
       </div>
     </div>
