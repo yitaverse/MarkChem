@@ -292,28 +292,28 @@ export function EditorPane({ value, onChange, isDark, scrollToLine }: EditorPane
             className="px-3 py-1 text-xs font-semibold rounded bg-white dark:bg-obsidian border border-slate-borderDark hover:border-cyan-accent text-slate-dark dark:text-slate-light transition-colors"
             title="Insert Inline Equation"
           >
-            Inline $\ce{}$
+            Inline<br/>$\ce{}$
           </button>
           <button
             onClick={() => insertSnippet('$$\n\\ce{}\n$$', 7)}
             className="px-3 py-1 text-xs font-semibold rounded bg-white dark:bg-obsidian border border-slate-borderDark hover:border-cyan-accent text-slate-dark dark:text-slate-light transition-colors"
             title="Insert Block Equation"
           >
-            Block $$\ce{}$$
+            Block<br/>$$\ce{}$$
           </button>
           <button
             onClick={() => insertSnippet('```chem\n\n```', 8)}
             className="px-3 py-1 text-xs font-semibold rounded bg-white dark:bg-obsidian border border-slate-borderDark hover:border-cyan-accent text-slate-dark dark:text-slate-light transition-colors"
             title="Insert 2D Molecule Block"
           >
-            SMILES ```chem
+            SMILES<br/>```chem
           </button>
           <button
             onClick={() => insertSnippet('<span style="display: block; page-break-before: always;"></span>')}
             className="px-3 py-1 text-xs font-semibold rounded bg-white dark:bg-obsidian border border-slate-borderDark hover:border-cyan-accent text-slate-dark dark:text-slate-light transition-colors"
             title="Insert Page Break for PDF"
           >
-            Pagebreak ↵
+            Pagebreak<br/>↵
           </button>
           <button
             onClick={() => setIsDrawerOpen(true)}

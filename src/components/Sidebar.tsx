@@ -91,7 +91,6 @@ export function Sidebar({ onFileOpen, onFileSave, onExportMd, onExportDocx, onTo
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-cyan-accent font-bold text-lg tracking-wide">MarkChem</h1>
         <div className="flex items-center gap-1">
-          <div className="w-px h-4 bg-slate-borderDark mr-1"></div>
           <button 
             onClick={() => setViewMode('editor')}
             className={`p-1 rounded transition-colors ${viewMode === 'editor' ? 'bg-cyan-accent/20 text-cyan-accent' : 'text-cyan-accent hover:bg-cyan-accent/10'}`}
