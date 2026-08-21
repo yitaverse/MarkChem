@@ -6,8 +6,6 @@ import katex from 'katex';
 import 'katex/dist/contrib/mhchem.mjs'; // Pure ESM version natively binds to the imported katex!
 import SmilesDrawer from 'smiles-drawer';
 import 'katex/dist/katex.min.css';
-import type { ViewMode } from '../App';
-import { Columns, Maximize, Eye } from 'lucide-react';
 import { MermaidRenderer } from './MermaidRenderer';
 import { slugify, extractTextFromChildren, generateTOC } from '../utils/printTOC';
 
@@ -57,11 +55,9 @@ const SmilesCanvas = ({ smiles, isDark }: SmilesCanvasProps) => {
 interface PreviewPaneProps {
   content: string;
   isDark: boolean;
-  viewMode: ViewMode;
-  setViewMode: (mode: ViewMode) => void;
 }
 
-export function PreviewPane({ content, isDark, viewMode, setViewMode }: PreviewPaneProps) {
+export function PreviewPane({ content, isDark }: PreviewPaneProps) {
   
   // Custom renderer for code blocks (for smiles-drawer and standard code formatting)
   const renderComponents = {
@@ -149,31 +145,8 @@ export function PreviewPane({ content, isDark, viewMode, setViewMode }: PreviewP
 
   return (
     <div data-print-expand className="flex-1 flex flex-col h-full overflow-hidden bg-slate-light dark:bg-obsidian text-slate-dark dark:text-slate-light">
-      <div data-print-hide className="flex items-center justify-between p-2 bg-slate-200 dark:bg-slate-panels border-b border-slate-borderDark shrink-0">
+      <div data-print-hide className="flex items-center p-2 bg-slate-200 dark:bg-slate-panels border-b border-slate-borderDark shrink-0">
         <span className="text-xs font-semibold px-2 uppercase tracking-widest text-slate-500">Live Preview</span>
-        <div className="flex items-center gap-1">
-          <button 
-            onClick={() => setViewMode('editor')}
-            className={`p-1.5 rounded transition-colors ${viewMode === 'editor' ? 'bg-obsidian text-cyan-accent' : 'hover:bg-obsidian text-slate-dark dark:text-slate-light'}`}
-            title="Editor Only"
-          >
-            <Maximize size={16} />
-          </button>
-          <button 
-            onClick={() => setViewMode('split')}
-            className={`p-1.5 rounded transition-colors ${viewMode === 'split' ? 'bg-obsidian text-cyan-accent' : 'hover:bg-obsidian text-slate-dark dark:text-slate-light'}`}
-            title="Split View"
-          >
-            <Columns size={16} />
-          </button>
-          <button 
-            onClick={() => setViewMode('preview')}
-            className={`p-1.5 rounded transition-colors ${viewMode === 'preview' ? 'bg-obsidian text-cyan-accent' : 'hover:bg-obsidian text-slate-dark dark:text-slate-light'}`}
-            title="Preview Only"
-          >
-            <Eye size={16} />
-          </button>
-        </div>
       </div>
       <div className="flex-1 h-full overflow-y-auto p-8 font-sans markdown-preview preview-pane-container prose prose-invert max-w-none">
         {tocHTML && (

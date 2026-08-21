@@ -18,8 +18,7 @@ import { languages } from '@codemirror/language-data';
 import { oneDark } from '@codemirror/theme-one-dark';
 import { syntaxHighlighting, defaultHighlightStyle, bracketMatching } from '@codemirror/language';
 import { autocompletion, CompletionContext } from '@codemirror/autocomplete';
-import type { ViewMode } from '../App';
-import { Columns, Maximize, Eye, Focus, Type, PencilRuler, FlaskConical } from 'lucide-react';
+import { Focus, Type, PencilRuler, FlaskConical } from 'lucide-react';
 import { PeriodicTableModal } from './PeriodicTableModal';
 import { MolecularDrawerModal } from './MolecularDrawerModal';
 import { PubChemModal } from './PubChemModal';
@@ -35,8 +34,6 @@ interface EditorPaneProps {
   value: string;
   onChange: (val: string) => void;
   isDark: boolean;
-  viewMode: ViewMode;
-  setViewMode: (mode: ViewMode) => void;
   scrollToLine?: number | null;
 }
 
@@ -94,7 +91,7 @@ const slashCommandCompletions = (context: CompletionContext) => {
   };
 };
 
-export function EditorPane({ value, onChange, isDark, viewMode, setViewMode, scrollToLine }: EditorPaneProps) {
+export function EditorPane({ value, onChange, isDark, scrollToLine }: EditorPaneProps) {
   const editorRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<EditorView | null>(null);
   const [isFocusMode, setIsFocusMode] = useState(false);
@@ -327,6 +324,13 @@ export function EditorPane({ value, onChange, isDark, viewMode, setViewMode, scr
             <FlaskConical size={14} />
             Search
           </button>
+          <button
+            onClick={() => insertSnippet('<span style="display: block; page-break-before: always;"></span>')}
+            className="px-3 py-1 text-xs font-semibold rounded bg-white dark:bg-obsidian border border-slate-borderDark hover:border-cyan-accent text-slate-dark dark:text-slate-light transition-colors"
+            title="Insert Page Break for PDF"
+          >
+            ↵ Pagebreak
+          </button>
         </div>
         
         <div className="flex items-center gap-1">
@@ -343,28 +347,6 @@ export function EditorPane({ value, onChange, isDark, viewMode, setViewMode, scr
             title="Toggle Focus Mode"
           >
             <Focus size={16} />
-          </button>
-          <div className="w-px h-4 bg-slate-borderDark mx-1"></div>
-          <button 
-            onClick={() => setViewMode('editor')}
-            className={`p-1.5 rounded transition-colors ${viewMode === 'editor' ? 'bg-obsidian text-cyan-accent' : 'hover:bg-obsidian text-slate-dark dark:text-slate-light'}`}
-            title="Editor Only"
-          >
-            <Maximize size={16} />
-          </button>
-          <button 
-            onClick={() => setViewMode('split')}
-            className={`p-1.5 rounded transition-colors ${viewMode === 'split' ? 'bg-obsidian text-cyan-accent' : 'hover:bg-obsidian text-slate-dark dark:text-slate-light'}`}
-            title="Split View"
-          >
-            <Columns size={16} />
-          </button>
-          <button 
-            onClick={() => setViewMode('preview')}
-            className={`p-1.5 rounded transition-colors ${viewMode === 'preview' ? 'bg-obsidian text-cyan-accent' : 'hover:bg-obsidian text-slate-dark dark:text-slate-light'}`}
-            title="Preview Only"
-          >
-            <Eye size={16} />
           </button>
         </div>
       </div>

@@ -232,6 +232,8 @@ function App() {
           currentFile={activeTabPath}
           isDark={isDark}
           toggleTheme={toggleTheme}
+          viewMode={viewMode}
+          setViewMode={setViewMode}
         />
         <div data-print-expand className="flex flex-col flex-1 overflow-hidden relative">
         {/* TABS BAR */}
@@ -268,8 +270,6 @@ function App() {
               value={currentContent} 
               onChange={handleContentChange} 
               isDark={isDark} 
-              viewMode={viewMode}
-              setViewMode={setViewMode}
               scrollToLine={scrollToLine}
             />
           </div>
@@ -277,8 +277,6 @@ function App() {
             <PreviewPane 
               content={debouncedContent} 
               isDark={isDark} 
-              viewMode={viewMode}
-              setViewMode={setViewMode}
             />
           </div>
           <TocPane content={currentContent} onNavigate={handleNavigate} />

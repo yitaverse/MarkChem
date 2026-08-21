@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { FileText, Save, FolderOpen, Moon, Sun, Printer, Download, FolderGit2, FileType, Bot, FilePlus } from 'lucide-react';
+import { FileText, Save, FolderOpen, Moon, Sun, Printer, Download, FolderGit2, FileType, Bot, FilePlus, Maximize, Columns, Eye } from 'lucide-react';
 import { open } from '@tauri-apps/plugin-dialog';
 import { readTextFile, readDir } from '@tauri-apps/plugin-fs';
 import type { DirEntry } from '@tauri-apps/plugin-fs';
+import type { ViewMode } from '../App';
 
 const TEMPLATES = [
   {
@@ -28,9 +29,11 @@ interface SidebarProps {
   currentFile: string | null;
   isDark: boolean;
   toggleTheme: () => void;
+  viewMode: ViewMode;
+  setViewMode: (mode: ViewMode) => void;
 }
 
-export function Sidebar({ onFileOpen, onFileSave, onExportMd, onExportDocx, onToggleAI, currentFile, isDark, toggleTheme }: SidebarProps) {
+export function Sidebar({ onFileOpen, onFileSave, onExportMd, onExportDocx, onToggleAI, currentFile, isDark, toggleTheme, viewMode, setViewMode }: SidebarProps) {
   const [workspace, setWorkspace] = useState<string | null>(null);
   const [workspaceFiles, setWorkspaceFiles] = useState<DirEntry[]>([]);
 
@@ -87,13 +90,37 @@ export function Sidebar({ onFileOpen, onFileSave, onExportMd, onExportDocx, onTo
     <div data-print-hide className="w-64 h-full bg-slate-panels border-r border-slate-borderDark flex flex-col p-4 text-sm text-slate-textDark shrink-0 overflow-y-auto">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-cyan-accent font-bold text-lg tracking-wide">MarkChem</h1>
-        <button 
-          onClick={toggleTheme} 
-          className="p-1 hover:bg-obsidian rounded transition-colors"
-          title="Toggle Theme"
-        >
-          {isDark ? <Sun size={18} /> : <Moon size={18} />}
-        </button>
+        <div className="flex items-center gap-1">
+          <button 
+            onClick={() => setViewMode('editor')}
+            className={`p-1 rounded transition-colors ${viewMode === 'editor' ? 'bg-obsidian text-cyan-accent' : 'hover:bg-obsidian text-slate-dark dark:text-slate-light'}`}
+            title="Editor Only"
+          >
+            <Maximize size={16} />
+          </button>
+          <button 
+            onClick={() => setViewMode('split')}
+            className={`p-1 rounded transition-colors ${viewMode === 'split' ? 'bg-obsidian text-cyan-accent' : 'hover:bg-obsidian text-slate-dark dark:text-slate-light'}`}
+            title="Split View"
+          >
+            <Columns size={16} />
+          </button>
+          <button 
+            onClick={() => setViewMode('preview')}
+            className={`p-1 rounded transition-colors ${viewMode === 'preview' ? 'bg-obsidian text-cyan-accent' : 'hover:bg-obsidian text-slate-dark dark:text-slate-light'}`}
+            title="Preview Only"
+          >
+            <Eye size={16} />
+          </button>
+          <div className="w-px h-4 bg-slate-borderDark mx-1"></div>
+          <button 
+            onClick={toggleTheme} 
+            className="p-1 hover:bg-obsidian rounded transition-colors"
+            title="Toggle Theme"
+          >
+            {isDark ? <Sun size={18} /> : <Moon size={18} />}
+          </button>
+        </div>
       </div>
 
       <div className="uppercase tracking-wider font-semibold mb-4 text-xs">Explorer</div>
