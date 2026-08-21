@@ -57,6 +57,7 @@ function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('split');
   const [scrollToLine, setScrollToLine] = useState<number | null>(null);
   const [headerHeight, setHeaderHeight] = useState<number>(0);
+  const [exportDPI, setExportDPI] = useState(300);
   const editorHeaderRef = useRef<HTMLDivElement>(null);
 
   const syncHeaderHeight = useCallback(() => {
@@ -251,6 +252,8 @@ function App() {
           toggleTheme={toggleTheme}
           viewMode={viewMode}
           setViewMode={setViewMode}
+          exportDPI={exportDPI}
+          setExportDPI={setExportDPI}
         />
         <div data-print-expand className="flex flex-col flex-1 overflow-hidden relative">
         {/* TABS BAR */}
@@ -296,6 +299,7 @@ function App() {
               content={debouncedContent} 
               isDark={isDark}
               headerHeight={headerHeight}
+              exportDPI={exportDPI}
             />
           </div>
           <TocPane content={currentContent} onNavigate={handleNavigate} />

@@ -12,14 +12,16 @@ import { slugify, extractTextFromChildren, generateTOC } from '../utils/printTOC
 interface SmilesCanvasProps {
   smiles: string;
   isDark: boolean;
+  exportDPI: number;
 }
 
 // Local version of SmilesDrawerRenderer to match existing imports
-const SmilesCanvas = ({ smiles, isDark }: SmilesCanvasProps) => {
+const SmilesCanvas = ({ smiles, isDark, exportDPI }: SmilesCanvasProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     if (canvasRef.current && smiles) {
+      const scale = exportDPI / 96;
       const options = {
         width: 400,
         height: 300,
@@ -33,32 +35,34 @@ const SmilesCanvas = ({ smiles, isDark }: SmilesCanvasProps) => {
         if (parse) {
           parse(smiles, (tree: any) => {
             if (typeof Drawer === 'function') {
-               const drawer = new Drawer(options);
+               const drawer = new Drawer({ ...options, width: 400 * scale, height: 300 * scale });
                drawer.draw(tree, canvasRef.current, isDark ? 'dark' : 'light', false);
             }
           }, (err: any) => {
             console.error('Smiles parser error:', err);
           });
         } else {
-           const drawer = new (SmilesDrawer as any)(options);
+           const drawer = new (SmilesDrawer as any)({ ...options, width: 400 * scale, height: 300 * scale });
            drawer.draw(smiles, canvasRef.current, isDark ? 'dark' : 'light', false);
         }
       } catch (err) {
         console.error('Smiles exception:', err);
       }
     }
-  }, [smiles, isDark]);
+  }, [smiles, isDark, exportDPI]);
 
-  return <canvas ref={canvasRef} />;
+  const scale = exportDPI / 96;
+  return <canvas ref={canvasRef} style={{ width: 400, height: 300 }} />;
 };
 
 interface PreviewPaneProps {
   content: string;
   isDark: boolean;
   headerHeight?: number;
+  exportDPI?: number;
 }
 
-export function PreviewPane({ content, isDark, headerHeight }: PreviewPaneProps) {
+export function PreviewPane({ content, isDark, headerHeight, exportDPI = 300 }: PreviewPaneProps) {
   
   // Custom renderer for code blocks (for smiles-drawer and standard code formatting)
   const renderComponents = {
@@ -69,7 +73,7 @@ export function PreviewPane({ content, isDark, headerHeight }: PreviewPaneProps)
       if (isBlock && match && match[1] === 'chem') {
         return (
           <div className="flex justify-center p-4 bg-white dark:bg-slate-panels rounded-md border border-slate-borderDark my-4 shadow-sm">
-            <SmilesCanvas smiles={String(children).replace(/\n$/, '')} isDark={isDark} />
+            <SmilesCanvas smiles={String(children).replace(/\n$/, '')} isDark={isDark} exportDPI={exportDPI} />
           </div>
         );
       }

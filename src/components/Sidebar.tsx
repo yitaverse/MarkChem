@@ -31,9 +31,11 @@ interface SidebarProps {
   toggleTheme: () => void;
   viewMode: ViewMode;
   setViewMode: (mode: ViewMode) => void;
+  exportDPI: number;
+  setExportDPI: (dpi: number) => void;
 }
 
-export function Sidebar({ onFileOpen, onFileSave, onExportMd, onExportDocx, onToggleAI, currentFile, isDark, toggleTheme, viewMode, setViewMode }: SidebarProps) {
+export function Sidebar({ onFileOpen, onFileSave, onExportMd, onExportDocx, onToggleAI, currentFile, isDark, toggleTheme, viewMode, setViewMode, exportDPI, setExportDPI }: SidebarProps) {
   const [workspace, setWorkspace] = useState<string | null>(null);
   const [workspaceFiles, setWorkspaceFiles] = useState<DirEntry[]>([]);
 
@@ -214,13 +216,26 @@ export function Sidebar({ onFileOpen, onFileSave, onExportMd, onExportDocx, onTo
         <span>Export as Word (.docx)</span>
       </button>
 
-      <button 
-        onClick={handlePrint}
-        className="flex items-center gap-2 w-full p-2 hover:bg-obsidian hover:text-slate-light rounded transition-colors mt-1"
-      >
-        <Printer size={16} className="text-cyan-accent" />
-        <span>Export to PDF</span>
-      </button>
+      <div className="flex items-center gap-2 mt-1">
+        <Printer size={16} className="text-cyan-accent shrink-0" />
+        <select
+          value={exportDPI}
+          onChange={(e) => setExportDPI(Number(e.target.value))}
+          className="flex-1 bg-white dark:bg-obsidian border border-slate-borderDark rounded px-2 py-1.5 text-xs text-slate-dark dark:text-slate-light cursor-pointer"
+          title="Molecule resolution for PDF export"
+        >
+          <option value={72}>72 DPI</option>
+          <option value={144}>144 DPI</option>
+          <option value={300}>300 DPI</option>
+          <option value={600}>600 DPI</option>
+        </select>
+        <button 
+          onClick={handlePrint}
+          className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded bg-cyan-accent text-obsidian hover:bg-cyan-400 transition-colors shrink-0"
+        >
+          Export
+        </button>
+      </div>
     </div>
   );
 }

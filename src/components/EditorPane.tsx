@@ -286,8 +286,8 @@ export function EditorPane({ value, onChange, isDark, scrollToLine, headerRef }:
         onInsert={handleInsertPubChem}
       />
       {/* Editor Toolbar */}
-      <div ref={headerRef} data-print-hide className="flex items-center justify-between p-2 bg-slate-200 dark:bg-slate-panels border-b border-slate-borderDark shrink-0">
-        <div className="flex items-center gap-2">
+      <div ref={headerRef} data-print-hide className="flex items-center p-2 gap-2 bg-slate-200 dark:bg-slate-panels border-b border-slate-borderDark shrink-0">
+        <div className="flex items-center gap-2 overflow-x-auto min-w-0">
           <button
             onClick={() => insertSnippet('$\\ce{}$', 5)}
             className="px-3 py-1 text-xs font-semibold rounded bg-white dark:bg-obsidian border border-slate-borderDark hover:border-cyan-accent text-slate-dark dark:text-slate-light transition-colors"
@@ -337,14 +337,14 @@ export function EditorPane({ value, onChange, isDark, scrollToLine, headerRef }:
         <div className="flex items-center gap-1">
           <button 
             onClick={() => setIsTypewriterMode(!isTypewriterMode)}
-            className={`p-1.5 rounded transition-colors ${isTypewriterMode ? 'bg-cyan-accent text-obsidian' : 'hover:bg-obsidian text-slate-dark dark:text-slate-light'}`}
+            className={`p-1.5 rounded transition-colors ${isTypewriterMode ? 'bg-cyan-accent text-obsidian' : 'text-slate-dark dark:text-slate-light hover:bg-slate-300 dark:hover:bg-slate-600 hover:text-cyan-accent'}`}
             title="Toggle Typewriter Mode"
           >
             <Type size={16} />
           </button>
           <button 
             onClick={() => setIsFocusMode(!isFocusMode)}
-            className={`p-1.5 rounded transition-colors ${isFocusMode ? 'bg-cyan-accent text-obsidian' : 'hover:bg-obsidian text-slate-dark dark:text-slate-light'}`}
+            className={`p-1.5 rounded transition-colors ${isFocusMode ? 'bg-cyan-accent text-obsidian' : 'text-slate-dark dark:text-slate-light hover:bg-slate-300 dark:hover:bg-slate-600 hover:text-cyan-accent'}`}
             title="Toggle Focus Mode"
           >
             <Focus size={16} />
