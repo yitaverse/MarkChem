@@ -75,6 +75,22 @@ body {
     padding: 0 !important;
     background: white !important;
     color: black !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+  }
+
+  /* Ensure all text content wraps within page margins */
+  .preview-pane-container * {
+    max-width: 100% !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+  }
+
+  /* Allow pre/code blocks to scroll horizontally but wrap normal text */
+  .preview-pane-container pre,
+  .preview-pane-container code {
+    white-space: pre-wrap !important;
+    word-wrap: break-word !important;
   }
 
   /* Clean white background for print */
