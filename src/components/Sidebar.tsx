@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { FileText, Save, FolderOpen, Moon, Sun, Printer, Download, FolderGit2, FileType, Bot, FilePlus, Maximize, Columns, Eye } from 'lucide-react';
 import { open } from '@tauri-apps/plugin-dialog';
 import { readTextFile, readDir } from '@tauri-apps/plugin-fs';
 import type { DirEntry } from '@tauri-apps/plugin-fs';
 import type { ViewMode } from '../App';
+import { isTauri } from '@tauri-apps/api/core';
 
 const TEMPLATES = [
   {
@@ -17,6 +18,10 @@ const TEMPLATES = [
   {
     name: 'Blank Molecule',
     content: `\`\`\`chem\n\n\`\`\`\n`
+  },
+  {
+    name: 'Blank Document',
+    content: ``
   }
 ];
 
@@ -38,20 +43,37 @@ interface SidebarProps {
 export function Sidebar({ onFileOpen, onFileSave, onExportMd, onExportDocx, onToggleAI, currentFile, isDark, toggleTheme, viewMode, setViewMode, exportDPI, setExportDPI }: SidebarProps) {
   const [workspace, setWorkspace] = useState<string | null>(null);
   const [workspaceFiles, setWorkspaceFiles] = useState<DirEntry[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleOpen = async () => {
-    try {
-      const selected = await open({
-        multiple: false,
-        filters: [{ name: 'Markdown', extensions: ['md', 'markdown'] }]
-      });
-      if (selected && typeof selected === 'string') {
-        const contents = await readTextFile(selected);
-        onFileOpen(contents, selected);
+    if (isTauri()) {
+      try {
+        const selected = await open({
+          multiple: false,
+          filters: [{ name: 'Markdown', extensions: ['md', 'markdown'] }]
+        });
+        if (selected && typeof selected === 'string') {
+          const contents = await readTextFile(selected);
+          onFileOpen(contents, selected);
+        }
+      } catch (e) {
+        console.error(e);
       }
-    } catch (e) {
-      console.error(e);
+    } else {
+      fileInputRef.current?.click();
     }
+  };
+
+  const handleBrowserFileOpen = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const content = ev.target?.result as string;
+      onFileOpen(content, file.name);
+    };
+    reader.readAsText(file);
+    e.target.value = '';
   };
 
   const handleOpenWorkspace = async () => {
@@ -126,13 +148,23 @@ export function Sidebar({ onFileOpen, onFileSave, onExportMd, onExportDocx, onTo
 
       <div className="uppercase tracking-wider font-semibold mb-4 text-xs">Explorer</div>
       
-      <button 
-        onClick={handleOpenWorkspace}
-        className="flex items-center gap-2 w-full p-2 hover:bg-obsidian hover:text-slate-light rounded transition-colors"
-      >
-        <FolderGit2 size={16} className="text-cyan-accent" />
-        <span>Open Folder...</span>
-      </button>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".md,.markdown,.txt"
+        className="hidden"
+        onChange={handleBrowserFileOpen}
+      />
+
+      {isTauri() && (
+        <button 
+          onClick={handleOpenWorkspace}
+          className="flex items-center gap-2 w-full p-2 hover:bg-obsidian hover:text-slate-light rounded transition-colors"
+        >
+          <FolderGit2 size={16} className="text-cyan-accent" />
+          <span>Open Folder...</span>
+        </button>
+      )}
 
       <button 
         onClick={handleOpen}
