@@ -45,10 +45,11 @@ body {
     display: none !important;
   }
 
-  /* Nuclear option: break ALL overflow constraints in the layout tree */
+  /* Nuclear option: break ALL overflow/layout constraints — flex blocks pagination */
   html, body,
   #root,
   [data-print-expand] {
+    display: block !important;
     overflow: visible !important;
     height: auto !important;
     max-height: none !important;
@@ -173,9 +174,10 @@ body {
 
   .page-break {
     display: block !important;
-    page-break-before: always !important;
     break-before: page !important;
+    page-break-before: always !important;
   }
+  /* retro-compat: vecchi <span style="page-break-before..."> inseriti prima */
   span[style*="page-break-before"],
   div[style*="page-break-before"],
   div[style*="break-before"] {

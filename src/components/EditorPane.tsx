@@ -347,7 +347,7 @@ export function EditorPane({ value, onChange, isDark, scrollToLine, headerRef, o
           </button>
           <button
             onClick={() => {
-              const pagebreak = '\n\n<div class="page-break" style="break-before: page; page-break-before: always;"></div>\n\n';
+              const pagebreak = '\n\n<div class="page-break"></div>\n\n';
               insertSnippet(pagebreak, pagebreak.length);
             }}
             className="px-3 py-1 text-xs font-semibold rounded bg-white dark:bg-obsidian border border-slate-borderDark hover:border-cyan-accent text-slate-dark dark:text-slate-light transition-colors"
