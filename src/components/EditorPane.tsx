@@ -111,10 +111,12 @@ export function EditorPane({ value, onChange, isDark, scrollToLine, headerRef, o
   // (useEffect con deps []), quindi le extension di CodeMirror catturerebbero
   // per sempre le funzioni della prima render se le usassimo direttamente:
   // passando per un ref, leggono sempre la versione più recente.
+  const onChangeRef = useRef(onChange);
   const onTopLineChangeRef = useRef(onTopLineChange);
   const onEditorScrollRef = useRef(onEditorScroll);
   const onCursorLineChangeRef = useRef(onCursorLineChange);
   const onFocusChangeRef = useRef(onFocusChange);
+  useEffect(() => { onChangeRef.current = onChange; }, [onChange]);
   useEffect(() => { onTopLineChangeRef.current = onTopLineChange; }, [onTopLineChange]);
   useEffect(() => { onEditorScrollRef.current = onEditorScroll; }, [onEditorScroll]);
   useEffect(() => { onCursorLineChangeRef.current = onCursorLineChange; }, [onCursorLineChange]);
@@ -148,7 +150,7 @@ export function EditorPane({ value, onChange, isDark, scrollToLine, headerRef, o
         typewriterCompartment.of([]),
         EditorView.updateListener.of((update) => {
           if (update.docChanged) {
-            onChange(update.state.doc.toString());
+            onChangeRef.current?.(update.state.doc.toString());
           }
           if (update.transactions.some(tr => tr.effects.some(e => e.is(OPEN_PT_EFFECT)))) {
             setIsPtOpen(true);
