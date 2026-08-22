@@ -9,6 +9,8 @@ import { writeTextFile, writeFile } from "@tauri-apps/plugin-fs";
 import { htmlToDocx } from "wp-html-to-docx";
 import { X } from "lucide-react";
 import { isTauri } from "@tauri-apps/api/core";
+import { extractHeadings } from "./utils/printTOC";
+import { buildScrollMap, getPreviewScrollTop, getEditorScrollTop, resetScrollMap } from "./utils/scrollMap";
 
 const DEFAULT_CONTENT = `# MarkChem
 
@@ -42,15 +44,49 @@ export interface TabInfo {
   name: string;
 }
 
+// Remarkable-style: debounce + cancel+restart animation
+let previewAnimFrame: number | null = null;
+let editorAnimFrame: number | null = null;
+let syncDebounceTimer: ReturnType<typeof setTimeout> | undefined;
+
+function animateTo(el: HTMLElement, target: number, key: 'preview' | 'editor') {
+  // .stop(true) — cancel current animation on this element
+  if (key === 'editor') {
+    if (editorAnimFrame !== null) { cancelAnimationFrame(editorAnimFrame); editorAnimFrame = null; }
+  } else {
+    if (previewAnimFrame !== null) { cancelAnimationFrame(previewAnimFrame); previewAnimFrame = null; }
+  }
+
+  const start = el.scrollTop;
+  const delta = target - start;
+  if (Math.abs(delta) < 0.5) return;
+  const start_time = performance.now();
+  const duration = 100;
+
+  const step = (now: number) => {
+    const t = Math.min((now - start_time) / duration, 1);
+    el.scrollTop = start + delta * t; // linear easing
+    if (t < 1) {
+      const id = requestAnimationFrame(step);
+      if (key === 'editor') editorAnimFrame = id;
+      else previewAnimFrame = id;
+    } else {
+      if (key === 'editor') editorAnimFrame = null;
+      else previewAnimFrame = null;
+    }
+  };
+  const id = requestAnimationFrame(step);
+  if (key === 'editor') editorAnimFrame = id;
+  else previewAnimFrame = id;
+}
+
 function App() {
   const [openTabs, setOpenTabs] = useState<TabInfo[]>([]);
   const [activeTabPath, setActiveTabPath] = useState<string | null>(null);
   const [filesContent, setFilesContent] = useState<Record<string, string>>({});
   const [savedFilesContent, setSavedFilesContent] = useState<Record<string, string>>({});
-  
-  // The generic fallback content when no file is opened
+
   const [defaultContent, setDefaultContent] = useState(DEFAULT_CONTENT);
-  const [defaultSavedContent, setDefaultSavedContent] = useState(DEFAULT_CONTENT);
 
   const [isDark, setIsDark] = useState(true);
   const [isAIOpen, setIsAIOpen] = useState(false);
@@ -58,11 +94,25 @@ function App() {
   const [scrollToLine, setScrollToLine] = useState<number | null>(null);
   const [headerHeight, setHeaderHeight] = useState<number>(0);
   const [exportDPI, setExportDPI] = useState(300);
+  const [activeHeadingSlug, setActiveHeadingSlug] = useState<string | null>(null);
+  const activeHeadingSlugRef = useRef<string | null>(null);
+  const previewScrollRef = useRef<HTMLDivElement>(null);
+  const isNavigatingRef = useRef(false);
+  const isEditorFocusedRef = useRef(false);
   const editorHeaderRef = useRef<HTMLDivElement>(null);
+  const lastGoodHeaderHeight = useRef(0);
+
+  useEffect(() => { activeHeadingSlugRef.current = activeHeadingSlug; }, [activeHeadingSlug]);
 
   const syncHeaderHeight = useCallback(() => {
     if (editorHeaderRef.current) {
-      setHeaderHeight(editorHeaderRef.current.offsetHeight);
+      const h = editorHeaderRef.current.offsetHeight;
+      if (h > 0) {
+        lastGoodHeaderHeight.current = h;
+        setHeaderHeight(h);
+      } else if (lastGoodHeaderHeight.current > 0) {
+        setHeaderHeight(lastGoodHeaderHeight.current);
+      }
     }
   }, []);
 
@@ -95,6 +145,24 @@ function App() {
     return () => clearTimeout(handler);
   }, [currentContent]);
 
+  // Rebuild scroll map after preview DOM updates
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      buildScrollMap();
+    }, 350);
+    return () => clearTimeout(timer);
+  }, [debouncedContent]);
+
+  // Rebuild scroll map on window resize (PanWriter behavior)
+  useEffect(() => {
+    const onResize = () => {
+      resetScrollMap();
+      buildScrollMap();
+    };
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, [debouncedContent]);
+
   const handleContentChange = (newContent: string) => {
     if (activeTabPath) {
       setFilesContent(prev => ({ ...prev, [activeTabPath]: newContent }));
@@ -103,10 +171,118 @@ function App() {
     }
   };
 
-  const handleNavigate = (line: number) => {
+  const findClosestHeadingForLine = useCallback((line: number) => {
+    const headings = extractHeadings(currentContent);
+    if (headings.length === 0) return null;
+    let closest = headings[0];
+    for (const h of headings) {
+      if (h.line <= line) closest = h;
+      else break;
+    }
+    return closest;
+  }, [currentContent]);
+
+  const findVisiblePreviewHeading = useCallback(() => {
+    const container = previewScrollRef.current;
+    if (!container) return null;
+    const containerRect = container.getBoundingClientRect();
+    const headings = container.querySelectorAll<HTMLElement>('h1[id], h2[id], h3[id]');
+    if (headings.length === 0) return null;
+    const threshold = containerRect.top + containerRect.height * 0.4;
+    let best = '';
+    let bestTop = -Infinity;
+    headings.forEach((h) => {
+      const rect = h.getBoundingClientRect();
+      if (rect.top <= threshold && rect.top > bestTop) {
+        bestTop = rect.top;
+        best = h.id;
+      }
+    });
+    if (!best && headings.length > 0) best = (headings[0] as HTMLElement).id;
+    return best || null;
+  }, []);
+
+  const handleNavigate = useCallback((line: number) => {
+    isNavigatingRef.current = true;
     setScrollToLine(line);
-    setTimeout(() => setScrollToLine(null), 100);
-  };
+
+    // Also scroll preview to the closest heading at this line
+    const heading = findClosestHeadingForLine(line);
+    if (heading) {
+      setActiveHeadingSlug(heading.slug);
+      const container = previewScrollRef.current;
+      if (container) {
+        const el = container.querySelector(`#${CSS.escape(heading.slug)}`) as HTMLElement;
+        if (el) {
+          const containerTop = container.getBoundingClientRect().top;
+          const elTop = el.getBoundingClientRect().top;
+          const offset = container.scrollTop + (elTop - containerTop) - 40;
+          container.scrollTop = Math.max(0, offset);
+        }
+      }
+    }
+
+    setTimeout(() => {
+      setScrollToLine(null);
+      setTimeout(() => { isNavigatingRef.current = false; }, 300);
+    }, 100);
+  }, [findClosestHeadingForLine]);
+
+  // --- Remarkable-style scroll sync: debounce + animate ---
+  const handleEditorPixelScroll = useCallback((_editorScrollTop: number) => {
+    if (isNavigatingRef.current) return;
+
+    if (syncDebounceTimer) clearTimeout(syncDebounceTimer);
+    syncDebounceTimer = setTimeout(() => {
+      const container = previewScrollRef.current;
+      if (!container) return;
+      const scroller = document.querySelector('.cm-scroller') as HTMLElement | null;
+      if (!scroller) return;
+      const targetY = getPreviewScrollTop(scroller.scrollTop);
+      if (targetY === undefined) return;
+      animateTo(container, targetY, 'preview');
+    }, 50);
+  }, []);
+
+  // Editor line change → outline sync
+  const handleEditorScroll = useCallback((topLine: number) => {
+    if (isNavigatingRef.current) return;
+    if (!isEditorFocusedRef.current) {
+      const heading = findClosestHeadingForLine(topLine);
+      if (heading && heading.slug !== activeHeadingSlugRef.current) {
+        setActiveHeadingSlug(heading.slug);
+      }
+    }
+  }, [findClosestHeadingForLine]);
+
+  const handleCursorLineChange = useCallback((line: number) => {
+    if (isNavigatingRef.current) return;
+    const heading = findClosestHeadingForLine(line);
+    if (heading && heading.slug !== activeHeadingSlugRef.current) {
+      setActiveHeadingSlug(heading.slug);
+    }
+  }, [findClosestHeadingForLine]);
+
+  // Preview scroll → sync editor + outline
+  const handlePreviewScroll = useCallback(() => {
+    if (isNavigatingRef.current) return;
+    const slug = findVisiblePreviewHeading();
+    if (slug && slug !== activeHeadingSlugRef.current) {
+      setActiveHeadingSlug(slug);
+    }
+
+    // Debounce preview→editor sync too
+    if (syncDebounceTimer) clearTimeout(syncDebounceTimer);
+    syncDebounceTimer = setTimeout(() => {
+      const container = previewScrollRef.current;
+      if (!container) return;
+      const targetEditorPx = getEditorScrollTop(container.scrollTop);
+      if (targetEditorPx === undefined) return;
+      const scroller = document.querySelector('.cm-scroller') as HTMLElement | null;
+      if (!scroller) return;
+      animateTo(scroller, targetEditorPx, 'editor');
+    }, 50);
+  }, [findVisiblePreviewHeading]);
 
   const handleFileOpen = (fileContent: string, path: string) => {
     const name = path.split(/[\\/]/).pop() || 'Untitled';
@@ -164,7 +340,6 @@ function App() {
           }
         }
       } else {
-        // Browser Fallback
         const blob = new Blob([currentContent], { type: 'text/markdown' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -216,7 +391,6 @@ function App() {
           await writeFile(savePath, uint8Array);
         }
       } else {
-        // Browser Fallback
         let blob: Blob;
         if (docxBuffer instanceof Blob) {
           blob = docxBuffer;
@@ -239,7 +413,7 @@ function App() {
 
   return (
     <div data-print-expand className="flex flex-col w-full h-screen overflow-hidden text-slate-dark dark:text-slate-light">
-      {isTauri() && <Titlebar />}
+      <Titlebar />
       <div data-print-expand className="flex flex-1 overflow-hidden">
         <Sidebar 
           onFileOpen={handleFileOpen}
@@ -292,6 +466,10 @@ function App() {
               isDark={isDark} 
               scrollToLine={scrollToLine}
               headerRef={editorHeaderRef}
+              onTopLineChange={handleEditorScroll}
+              onEditorScroll={handleEditorPixelScroll}
+              onCursorLineChange={handleCursorLineChange}
+              onFocusChange={(focused) => { isEditorFocusedRef.current = focused; }}
             />
           </div>
           <div data-print-expand className={`flex-1 overflow-hidden flex flex-col ${viewMode === 'editor' ? 'hidden' : 'block'}`}>
@@ -300,9 +478,27 @@ function App() {
               isDark={isDark}
               headerHeight={headerHeight}
               exportDPI={exportDPI}
+              previewScrollRef={previewScrollRef}
+              onScroll={handlePreviewScroll}
             />
           </div>
-          <TocPane content={currentContent} onNavigate={handleNavigate} />
+          <TocPane 
+            content={currentContent} 
+            onNavigate={handleNavigate}
+            onHeadingClick={(slug) => {
+              const container = previewScrollRef.current;
+              if (container) {
+                const el = container.querySelector(`#${CSS.escape(slug)}`) as HTMLElement;
+                if (el) {
+                  const containerTop = container.getBoundingClientRect().top;
+                  const elTop = el.getBoundingClientRect().top;
+                  container.scrollTop = container.scrollTop + (elTop - containerTop) - 40;
+                  setActiveHeadingSlug(slug);
+                }
+              }
+            }}
+            activeHeadingSlug={activeHeadingSlug}
+          />
           
           {isAIOpen && (
             <AIAssistantPane 
