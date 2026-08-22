@@ -168,7 +168,43 @@ body {
   /* Headings: avoid orphaned titles */
   h1, h2, h3 {
     page-break-after: avoid;
+    break-after: avoid;
   }
+
+  /* Forced page break — supports both legacy span and new div insertion */
+  .page-break,
+  span[style*="page-break-before"],
+  div[style*="page-break-before"],
+  div[style*="break-before"] {
+    display: block !important;
+    float: none !important;
+    position: static !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    visibility: hidden !important;
+    overflow: hidden !important;
+    page-break-before: always !important;
+    break-before: page !important;
+  }
+}
+
+/* Page break: visible hint on screen, forced break in print */
+.page-break {
+  display: block;
+  border: none;
+  border-top: 1px dashed #94a3b8;
+  margin: 1.5rem 0;
+  height: 0;
+}
+span[style*="page-break-before"],
+div[style*="page-break-before"],
+div[style*="break-before"] {
+  display: block;
+  border-top: 1px dashed #94a3b8;
+  margin: 1.5rem 0;
 }
 
 /* Focus Mode */

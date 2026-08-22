@@ -36,6 +36,12 @@ interface EditorPaneProps {
   isDark: boolean;
   scrollToLine?: number | null;
   headerRef?: React.RefObject<HTMLDivElement | null>;
+  // NEW: emesse dall'editor per alimentare la scroll-sync e l'outline in App.tsx.
+  // Erano già consumate da App.tsx ma mai dichiarate/emesse qui — di fatto codice morto.
+  onTopLineChange?: (line: number) => void;   // riga sorgente più in alto visibile (per lo spy-scroll dell'outline)
+  onEditorScroll?: (scrollTop: number) => void; // scrollTop grezzo in px (per scrollMap.ts, mapping pixel-a-pixel)
+  onCursorLineChange?: (line: number) => void;  // riga del cursore (per l'outline quando l'editor ha il focus)
+  onFocusChange?: (focused: boolean) => void;   // per distinguere scroll "manuale" da scroll causato dal cursore
 }
 
 // Slash Command Menu definitions
@@ -92,7 +98,7 @@ const slashCommandCompletions = (context: CompletionContext) => {
   };
 };
 
-export function EditorPane({ value, onChange, isDark, scrollToLine, headerRef }: EditorPaneProps) {
+export function EditorPane({ value, onChange, isDark, scrollToLine, headerRef, onTopLineChange, onEditorScroll, onCursorLineChange, onFocusChange }: EditorPaneProps) {
   const editorRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<EditorView | null>(null);
   const [isFocusMode, setIsFocusMode] = useState(false);
@@ -100,6 +106,19 @@ export function EditorPane({ value, onChange, isDark, scrollToLine, headerRef }:
   const [isPtOpen, setIsPtOpen] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isPubChemOpen, setIsPubChemOpen] = useState(false);
+
+  // NEW: refs per le callback esterne. L'EditorState viene creato una sola volta
+  // (useEffect con deps []), quindi le extension di CodeMirror catturerebbero
+  // per sempre le funzioni della prima render se le usassimo direttamente:
+  // passando per un ref, leggono sempre la versione più recente.
+  const onTopLineChangeRef = useRef(onTopLineChange);
+  const onEditorScrollRef = useRef(onEditorScroll);
+  const onCursorLineChangeRef = useRef(onCursorLineChange);
+  const onFocusChangeRef = useRef(onFocusChange);
+  useEffect(() => { onTopLineChangeRef.current = onTopLineChange; }, [onTopLineChange]);
+  useEffect(() => { onEditorScrollRef.current = onEditorScroll; }, [onEditorScroll]);
+  useEffect(() => { onCursorLineChangeRef.current = onCursorLineChange; }, [onCursorLineChange]);
+  useEffect(() => { onFocusChangeRef.current = onFocusChange; }, [onFocusChange]);
 
   useEffect(() => {
     if (!editorRef.current) return;
@@ -140,6 +159,23 @@ export function EditorPane({ value, onChange, isDark, scrollToLine, headerRef }:
           if (update.transactions.some(tr => tr.effects.some(e => e.is(OPEN_PUBCHEM_EFFECT)))) {
             setIsPubChemOpen(true);
           }
+          // NEW: riga del cursore, per l'evidenziazione dell'outline mentre si scrive
+          if (update.selectionSet) {
+            const line = update.state.doc.lineAt(update.state.selection.main.head).number;
+            onCursorLineChangeRef.current?.(line);
+          }
+        }),
+        // NEW: scroll grezzo dell'editor -> alimenta scrollMap.ts (pixel-perfect) e l'outline (per riga)
+        EditorView.domEventHandlers({
+          scroll: (_event, view) => {
+            const scrollTop = view.scrollDOM.scrollTop;
+            onEditorScrollRef.current?.(scrollTop);
+            const block = view.lineBlockAtHeight(scrollTop);
+            const topLine = view.state.doc.lineAt(block.from).number;
+            onTopLineChangeRef.current?.(topLine);
+          },
+          focus: () => { onFocusChangeRef.current?.(true); },
+          blur: () => { onFocusChangeRef.current?.(false); }
         }),
         EditorView.theme({
           "&": { height: "100%", outline: "none" },
@@ -310,7 +346,10 @@ export function EditorPane({ value, onChange, isDark, scrollToLine, headerRef }:
             SMILES<br/>```chem
           </button>
           <button
-            onClick={() => insertSnippet('<span style="display: block; page-break-before: always;"></span>')}
+            onClick={() => {
+              const pagebreak = '\n\n<div class="page-break" style="break-before: page; page-break-before: always;"></div>\n\n';
+              insertSnippet(pagebreak, pagebreak.length);
+            }}
             className="px-3 py-1 text-xs font-semibold rounded bg-white dark:bg-obsidian border border-slate-borderDark hover:border-cyan-accent text-slate-dark dark:text-slate-light transition-colors"
             title="Insert Page Break for PDF"
           >
