@@ -170,7 +170,7 @@ export function PreviewPane({ content, isDark, headerHeight, exportDPI = 300, pr
       const rawClass = (props as any).className ?? (node as any)?.properties?.className ?? '';
       const cls = Array.isArray(rawClass) ? rawClass.join(' ') : String(rawClass);
       if (cls.includes('page-break') || cls.includes('pagebreak')) {
-        return <div className="page-break" data-source-line={sourceLine(node)} {...props} />;
+        return <div className="page-break" data-source-line={sourceLine(node)} style={{ display: 'block', borderTop: '2px dashed #38bdf8', margin: '1.5rem 0', height: 0 }} {...props} />;
       }
       return <div {...props} />;
     },
