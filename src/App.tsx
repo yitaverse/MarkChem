@@ -421,7 +421,7 @@ function App() {
 
   return (
     <div data-print-expand className="flex flex-col w-full h-screen overflow-hidden text-slate-dark dark:text-slate-light">
-      <Titlebar />
+      {isTauri() && <Titlebar />}
       <div data-print-expand className="flex flex-1 overflow-hidden">
         <Sidebar 
           onFileOpen={handleFileOpen}
