@@ -68,10 +68,9 @@ export function TocPane({ content, onNavigate, activeHeadingSlug }: TocPaneProps
                 onClick={() => onNavigate(item.line)}
                 className={`text-xs cursor-pointer truncate transition-colors border-l-2 pl-2 -ml-2 ${
                   isActive
-                    ? 'text-cyan-accent font-semibold border-cyan-accent bg-cyan-accent/10' // NEW: barra verticale #06B6D4
-                    : 'text-slate-400 hover:text-cyan-accent border-transparent hover:border-slate-600'
+                    ? 'text-cyan-accent font-semibold border-cyan-accent' // barra #06B6D4
+                    : 'text-slate-400 hover:text-cyan-accent border-transparent'
                 }`}
-                style={{ marginLeft: `${(item.level - 1) * 10}px` }}
                 title={item.text}
               >
                 {item.text}
