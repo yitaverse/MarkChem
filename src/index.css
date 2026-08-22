@@ -172,8 +172,14 @@ body {
     break-after: avoid;
   }
 
-  .page-break {
+  .page-break, .pagebreak {
     display: block !important;
+    float: none !important;
+    clear: both !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
     break-before: page !important;
     page-break-before: always !important;
   }
@@ -182,13 +188,16 @@ body {
   div[style*="page-break-before"],
   div[style*="break-before"] {
     display: block !important;
+    float: none !important;
+    clear: both !important;
+    border: none !important;
     page-break-before: always !important;
     break-before: page !important;
   }
 }
 
 /* Page break: visible hint on screen, forced break in print */
-.page-break {
+.page-break, .pagebreak {
   display: block;
   border: none;
   border-top: 1px dashed #94a3b8;
