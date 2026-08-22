@@ -66,12 +66,12 @@ export function TocPane({ content, onNavigate, activeHeadingSlug }: TocPaneProps
               <div
                 key={item.id}
                 onClick={() => onNavigate(item.line)}
-                className={`text-xs cursor-pointer truncate transition-colors border-l-2 pl-2 ${
+                className={`text-xs cursor-pointer truncate transition-colors border-l-2 pl-2 -ml-2 ${
                   isActive
                     ? 'text-cyan-accent font-semibold border-cyan-accent'
                     : 'text-slate-400 hover:text-cyan-accent border-transparent'
                 }`}
-                style={{ marginLeft: `${(item.level - 1) * 10}px` }}
+                style={{ paddingLeft: `${(item.level - 1) * 10 + 8}px` }}
                 title={item.text}
               >
                 {item.text}

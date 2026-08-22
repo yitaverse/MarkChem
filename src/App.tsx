@@ -313,16 +313,24 @@ function App() {
   };
 
   const handleFileSave = async () => {
-    if (activeTabPath) {
+    const content = activeTabPath ? (filesContent[activeTabPath] || '') : currentContent;
+    if (activeTabPath && isTauri()) {
       try {
-        await writeTextFile(activeTabPath, filesContent[activeTabPath] || '');
-        setSavedFilesContent(prev => ({ ...prev, [activeTabPath]: filesContent[activeTabPath] || '' }));
+        await writeTextFile(activeTabPath, content);
+        setSavedFilesContent(prev => ({ ...prev, [activeTabPath]: content }));
+        return;
       } catch (err) {
         console.error("Failed to save file", err);
       }
-    } else {
-      handleExportMd();
     }
+    const blob = new Blob([content], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = activeTabPath ? (activeTabPath.split(/[\\/]/).pop() || 'document.md') : 'document.md';
+    a.click();
+    URL.revokeObjectURL(url);
+    if (activeTabPath) setSavedFilesContent(prev => ({ ...prev, [activeTabPath]: content }));
   };
 
   const handleExportMd = async () => {
