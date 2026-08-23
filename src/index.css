@@ -304,21 +304,6 @@ span.endash::before {
 
 /* === Counters === */
 
-/* .w-64 h1::before {
-	content: none;
-} */
-
-/* div.block:nth-child(2) {
-	counter-reset: h2-counter 0 !important;
-}
-div.block:nth-child(2) h2 {
-	counter-increment: h2-counter;
-}
-div.block:nth-child(2) h2::before {
-	color: #06b6d4;
-	content: counter(h2-counter, upper-roman) ". ";
-} */
-
 /* Scope al solo preview, per non toccare heading altrove nell'app */
 .preview-pane-container {
 	counter-reset: h1counter;
