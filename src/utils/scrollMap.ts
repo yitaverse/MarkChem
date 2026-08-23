@@ -97,13 +97,27 @@ export function buildScrollMap(): void {
   }
 }
 
-export function getPreviewScrollTop(editorScrollTop: number): number | undefined {
+export function getPreviewScrollTop(editorScrollTop: number, editorMaxScrollTop?: number): number | undefined {
   if (!scrollMap) return undefined;
+  // NEW: lo scrollTop reale dell'editor non raggiunge mai `totalHeight` (manca l'altezza
+  // del viewport), quindi l'ultimo valore della mappa (il vero fondo del preview) non
+  // verrebbe mai restituito. Quando l'editor è al proprio fondo reale, clampa al fondo.
+  if (editorMaxScrollTop !== undefined && editorScrollTop >= editorMaxScrollTop - 2) {
+    for (let i = scrollMap.length - 1; i >= 0; i--) {
+      if (scrollMap[i] !== undefined) return scrollMap[i];
+    }
+  }
   return scrollMap[Math.round(editorScrollTop)];
 }
 
-export function getEditorScrollTop(previewScrollTop: number): number | undefined {
+export function getEditorScrollTop(previewScrollTop: number, previewMaxScrollTop?: number): number | undefined {
   if (!reverseScrollMap) return undefined;
+  // NEW: stesso clamp, in direzione preview -> editor
+  if (previewMaxScrollTop !== undefined && previewScrollTop >= previewMaxScrollTop - 2) {
+    for (let i = reverseScrollMap.length - 1; i >= 0; i--) {
+      if (reverseScrollMap[i] !== undefined) return reverseScrollMap[i];
+    }
+  }
   const start = Math.round(previewScrollTop);
   for (let i = start; i >= 0; i--) {
     if (reverseScrollMap[i] !== undefined) {

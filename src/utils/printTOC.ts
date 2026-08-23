@@ -76,3 +76,40 @@ export function generateTOC(content: string): string {
 
   return html;
 }
+
+// Mancava del tutto — App.tsx la importa e la usa in findClosestHeadingForLine
+// per far corrispondere una riga dell'editor all'heading più vicino (spy-scroll
+// dell'outline). Senza questa funzione il progetto non compila.
+export interface HeadingEntry {
+  level: number;
+  text: string;
+  slug: string;
+  line: number; // 1-indexed, coerente con doc.line() di CodeMirror
+}
+
+export function extractHeadings(content: string): HeadingEntry[] {
+  const lines = content.split('\n');
+  const headings: HeadingEntry[] = [];
+  let inCodeBlock = false;
+
+  lines.forEach((line, index) => {
+    if (line.trim().startsWith('```')) {
+      inCodeBlock = !inCodeBlock;
+      return;
+    }
+    if (inCodeBlock) return;
+
+    const match = /^(#{1,6})\s+(.*)/.exec(line);
+    if (match) {
+      const text = match[2].trim();
+      headings.push({
+        level: match[1].length,
+        text,
+        slug: slugify(text),
+        line: index + 1
+      });
+    }
+  });
+
+  return headings;
+}

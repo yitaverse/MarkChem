@@ -3,221 +3,365 @@
 @tailwind utilities;
 
 @layer base {
-  @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
-  
-  html, body {
-    @apply w-full h-full m-0 p-0 overflow-hidden font-sans transition-colors duration-200;
-  }
-  
-  #root {
-    @apply w-full h-full flex;
-  }
+	@import url("https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap");
+
+	html,
+	body {
+		@apply w-full h-full m-0 p-0 overflow-hidden font-sans transition-colors duration-200;
+	}
+
+	#root {
+		@apply w-full h-full flex;
+	}
 }
 
 /* Base theme styles using custom tailwind classes */
 body.dark {
-  @apply bg-obsidian text-slate-light;
+	@apply bg-obsidian text-slate-light;
 }
 
 body {
-  @apply bg-slate-light text-slate-dark;
+	@apply bg-slate-light text-slate-dark;
 }
 
 /* Print-only elements: hidden by default, shown in print */
 .print-only {
-  display: none !important;
+	display: none !important;
 }
 
 /* Perfect PDF Print Export Styles */
 @media print {
-  @page {
-    size: A4;
-    margin: 2cm;
-  }
+	@page {
+		size: A4;
+		margin: 2cm;
+	}
 
-  /* Show print-only elements */
-  .print-only {
-    display: block !important;
-  }
+	/* Show print-only elements */
+	.print-only {
+		display: block !important;
+	}
 
-  /* Hide all UI chrome */
-  [data-print-hide] {
-    display: none !important;
-  }
+	/* Hide all UI chrome */
+	[data-print-hide] {
+		display: none !important;
+	}
 
-  /* Nuclear option: break ALL overflow/layout constraints — flex blocks pagination */
-  html, body,
-  #root,
-  [data-print-expand] {
-    display: block !important;
-    overflow: visible !important;
-    height: auto !important;
-    max-height: none !important;
-  }
+	/* Nuclear option: break ALL overflow/layout constraints - flex blocks pagination */
+	html,
+	body,
+	#root,
+	[data-print-expand] {
+		display: block !important;
+		overflow: visible !important;
+		height: auto !important;
+		max-height: none !important;
+	}
 
-  /* Reset overflow on layout children, but EXCLUDE KaTeX internals */
-  [data-print-expand] > *:not(.katex-block-wrapper):not(.katex) {
-    overflow: visible !important;
-    height: auto !important;
-    max-height: none !important;
-  }
+	/* Reset overflow on layout children, but EXCLUDE KaTeX internals */
+	[data-print-expand] > *:not(.katex-block-wrapper):not(.katex) {
+		overflow: visible !important;
+		height: auto !important;
+		max-height: none !important;
+	}
 
-  /* Hide CodeMirror editor wrapper */
-  .flex-1.h-full.font-mono {
-    display: none !important;
-  }
+	/* Hide CodeMirror editor wrapper */
+	.flex-1.h-full.font-mono {
+		display: none !important;
+	}
 
-  /* Reset preview container for printing */
-  .preview-pane-container {
-    width: 100% !important;
-    max-width: none !important;
-    height: auto !important;
-    overflow: visible !important;
-    padding: 0 !important;
-    background: white !important;
-    color: black !important;
-    word-wrap: break-word !important;
-    overflow-wrap: break-word !important;
-  }
+	/* Reset preview container for printing */
+	.preview-pane-container {
+		width: 100% !important;
+		max-width: none !important;
+		height: auto !important;
+		overflow: visible !important;
+		padding: 0 !important;
+		background: white !important;
+		color: black !important;
+		word-wrap: break-word !important;
+		overflow-wrap: break-word !important;
+	}
 
-  /* Ensure all text content wraps within page margins */
-  .preview-pane-container * {
-    max-width: 100% !important;
-    word-wrap: break-word !important;
-    overflow-wrap: break-word !important;
-  }
+	/* Ensure all text content wraps within page margins */
+	.preview-pane-container * {
+		max-width: 100% !important;
+		word-wrap: break-word !important;
+		overflow-wrap: break-word !important;
+	}
 
-  /* Allow pre/code blocks to scroll horizontally but wrap normal text */
-  .preview-pane-container pre,
-  .preview-pane-container code {
-    white-space: pre-wrap !important;
-    word-wrap: break-word !important;
-  }
+	/* Allow pre/code blocks to scroll horizontally but wrap normal text */
+	.preview-pane-container pre,
+	.preview-pane-container code {
+		white-space: pre-wrap !important;
+		word-wrap: break-word !important;
+	}
 
-  /* Clean white background for print */
-  body {
-    background: white !important;
-  }
+	/* Clean white background for print */
+	body {
+		background: white !important;
+	}
 
-  /* Table of Contents for print */
-  .print-toc {
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    padding: 1.5rem 2rem;
-    margin-bottom: 2rem;
-    page-break-inside: avoid;
-    background: #fafafa;
-  }
+	/* Table of Contents for print */
+	.print-toc {
+		border: 1px solid #ccc;
+		border-radius: 6px;
+		padding: 1.5rem 2rem;
+		margin-bottom: 2rem;
+		page-break-inside: avoid;
+		background: #fafafa;
+	}
 
-  .print-toc h2 {
-    font-size: 1.25rem;
-    font-weight: 700;
-    margin-bottom: 0.75rem;
-    border-bottom: 1px solid #ddd;
-    padding-bottom: 0.5rem;
-    color: #1a1a1a;
-  }
+	.print-toc h2 {
+		font-size: 1.25rem;
+		font-weight: 700;
+		margin-bottom: 0.75rem;
+		border-bottom: 1px solid #ddd;
+		padding-bottom: 0.5rem;
+		color: #1a1a1a;
+	}
 
-  .print-toc ul {
-    list-style: disc;
-    padding-left: 1.5rem;
-    margin: 0.25rem 0;
-  }
+	.print-toc ul {
+		list-style: disc;
+		padding-left: 1.5rem;
+		margin: 0.25rem 0;
+	}
 
-  .print-toc ul ul {
-    list-style: circle;
-    padding-left: 1.5rem;
-  }
+	.print-toc ul ul {
+		list-style: circle;
+		padding-left: 1.5rem;
+	}
 
-  .print-toc li {
-    margin: 0.25rem 0;
-    font-size: 0.9rem;
-    color: #333;
-  }
+	.print-toc li {
+		margin: 0.25rem 0;
+		font-size: 0.9rem;
+		color: #333;
+	}
 
-  .print-toc a {
-    text-decoration: none;
-    color: #333;
-  }
+	.print-toc a {
+		text-decoration: none;
+		color: #333;
+	}
 
-  /* Fix canvas (SMILES) and Math sizes */
-  canvas {
-    max-width: 100% !important;
-    page-break-inside: avoid;
-    page-break-after: auto;
-  }
+	/* Fix canvas (SMILES) and Math sizes */
+	canvas {
+		max-width: 100% !important;
+		page-break-inside: avoid;
+		page-break-after: auto;
+	}
 
-  /* KaTeX block: constrain to page width and center properly */
-  .katex-block-wrapper {
-    width: 100% !important;
-    max-width: 100% !important;
-    overflow-x: hidden !important;
-    margin: 1rem auto !important;
-    text-align: center !important;
-  }
+	/* KaTeX block: constrain to page width and center properly */
+	.katex-block-wrapper {
+		width: 100% !important;
+		max-width: 100% !important;
+		overflow-x: hidden !important;
+		margin: 1rem auto !important;
+		text-align: center !important;
+	}
 
-  .katex-block-wrapper .katex-display {
-    margin: 0 auto !important;
-    text-align: center !important;
-  }
+	.katex-block-wrapper .katex-display {
+		margin: 0 auto !important;
+		text-align: center !important;
+	}
 
-  .katex-block-wrapper,
-  pre {
-    page-break-inside: avoid;
-  }
+	.katex-block-wrapper,
+	pre {
+		page-break-inside: avoid;
+	}
 
-  /* Headings: avoid orphaned titles */
-  h1, h2, h3 {
-    page-break-after: avoid;
-    break-after: avoid;
-  }
+	/* Headings: avoid orphaned titles */
+	h1,
+	h2,
+	h3 {
+		page-break-after: avoid;
+		break-after: avoid;
+	}
 
-  .page-break, .pagebreak {
-    display: block !important;
-    float: none !important;
-    clear: both !important;
-    height: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    border: none !important;
-    break-before: page !important;
-    page-break-before: always !important;
-  }
-  /* retro-compat: vecchi <span style="page-break-before..."> inseriti prima */
-  span[style*="page-break-before"],
-  div[style*="page-break-before"],
-  div[style*="break-before"] {
-    display: block !important;
-    float: none !important;
-    clear: both !important;
-    border: none !important;
-    page-break-before: always !important;
-    break-before: page !important;
-  }
+	.page-break,
+	.pagebreak {
+		display: block !important;
+		float: none !important;
+		clear: both !important;
+		height: 0 !important;
+		margin: 0 !important;
+		padding: 0 !important;
+		border: none !important;
+		break-before: page !important;
+		page-break-before: always !important;
+	}
+	/* retro-compat: vecchi <span style="page-break-before..."> inseriti prima */
+	span[style*="page-break-before"],
+	div[style*="page-break-before"],
+	div[style*="break-before"] {
+		display: block !important;
+		float: none !important;
+		clear: both !important;
+		border: none !important;
+		page-break-before: always !important;
+		break-before: page !important;
+	}
 }
 
 /* Page break: visible hint on screen, forced break in print */
-.page-break, .pagebreak {
-  display: block;
-  border: none;
-  border-top: 1px dashed #94a3b8;
-  margin: 1.5rem 0;
-  height: 0;
+.page-break,
+.pagebreak {
+	display: block;
+	border: none;
+	border-top: 1px dashed #94a3b8;
+	margin: 1.5rem 0;
+	height: 0;
 }
 span[style*="page-break-before"],
 div[style*="page-break-before"],
 div[style*="break-before"] {
-  display: block;
-  border-top: 1px dashed #94a3b8;
-  margin: 1.5rem 0;
+	display: block;
+	border-top: 1px dashed #94a3b8;
+	margin: 1.5rem 0;
 }
 
 /* Focus Mode */
 .focus-mode-active .cm-line:not(.cm-activeLine) {
-  opacity: 0.3;
-  transition: opacity 0.3s ease;
+	opacity: 0.3;
+	transition: opacity 0.3s ease;
 }
 .focus-mode-active .cm-activeLine {
-  opacity: 1;
-  transition: opacity 0.3s ease;
+	opacity: 1;
+	transition: opacity 0.3s ease;
+}
+
+/* === CUSTOM MARKDOWN CSS === */
+
+/* == Select a more external ul or ol list == */
+:is(ul, ol):not(:is(ul, ol) :is(ul, ol)) {
+	border: 1px dashed #ccc;
+	border-radius: 12px;
+	padding: 2.5rem;
+}
+blockquote :is(ul, ol):not(:is(ul, ol) :is(ul, ol)) {
+	border: 2px dashed #06b6d4;
+	border-left: 4px solid #06b6d4;
+	border-radius: 12px;
+	padding: 2.5rem;
+}
+
+ul,
+ol {
+	/* user-agent styles */
+	display: block;
+	margin-block-start: 1em;
+	margin-block-end: 1em;
+	padding-inline-start: 40px;
+}
+ul.ul-1 {
+	list-style-type: disc;
+}
+ul.ul-2 {
+	list-style-type: circle;
+}
+ul.ul-3 {
+	list-style-type: square;
+}
+ol.ol-n {
+	list-style-type: decimal;
+}
+ol.ol-0n {
+	list-style-type: decimal-leading-zero;
+}
+ol.ol-l-latin {
+	/*https://stackoverflow.com/a/8367085*/
+	list-style-type: lower-alpha; /* Note that IE8 and earlier versions won't display lower-latin */
+}
+ol.ol-l-greek {
+	list-style-type: lower-greek;
+}
+ol.ol-l-roman {
+	list-style-type: lower-roman;
+}
+ol.ol-u-latin {
+	/*https://stackoverflow.com/a/8367085*/
+	list-style-type: upper-alpha;
+}
+ol.ol-u-roman {
+	list-style-type: upper-roman;
+}
+blockquote li,
+li {
+	display: list-item;
+	text-align: match-parent;
+	margin-bottom: 20px;
+}
+::marker {
+	unicode-bidi: isolate;
+	font-variant-numeric: tabular-nums;
+	text-transform: none;
+}
+
+span.emdash::before {
+	content: "—";
+}
+span.endash::before {
+	content: "–";
+}
+
+/* === Counters === */
+
+/* .w-64 h1::before {
+	content: none;
+} */
+
+/* div.block:nth-child(2) {
+	counter-reset: h2-counter 0 !important;
+}
+div.block:nth-child(2) h2 {
+	counter-increment: h2-counter;
+}
+div.block:nth-child(2) h2::before {
+	color: #06b6d4;
+	content: counter(h2-counter, upper-roman) ". ";
+} */
+
+/* Scope al solo preview, per non toccare heading altrove nell'app */
+.preview-pane-container {
+	counter-reset: h1counter;
+}
+
+h1 {
+	counter-increment: h1counter;
+	counter-reset: h2counter; /* ogni nuovo H1 azzera H2 */
+}
+h2 {
+	counter-increment: h2counter;
+	counter-reset: h3counter; /* ogni nuovo H2 azzera H3 */
+}
+h3 {
+	counter-increment: h3counter;
+	counter-reset: h4counter;
+}
+h4 {
+	counter-increment: h4counter;
+	counter-reset: h5counter;
+}
+h5 {
+	counter-increment: h5counter;
+	counter-reset: h6counter;
+}
+h6 {
+	counter-increment: h6counter;
+}
+
+/* H1: nessun numero, come richiesto — solo counter-reset/increment, niente ::before */
+h2::before {
+	content: counter(h2counter, upper-roman) ". ";
+	color: #06b6d4;
+}
+h3::before {
+	content: counter(h3counter, decimal) ". ";
+}
+h4::before {
+	content: counter(h4counter, upper-alpha) ". ";
+}
+h5::before {
+	content: counter(h5counter, lower-alpha) ". ";
+}
+h6::before {
+	content: counter(h6counter, lower-roman) ". ";
 }

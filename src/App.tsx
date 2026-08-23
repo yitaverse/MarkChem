@@ -238,7 +238,7 @@ function App() {
       if (!container) return;
       const scroller = document.querySelector('.cm-scroller') as HTMLElement | null;
       if (!scroller) return;
-      const targetY = getPreviewScrollTop(scroller.scrollTop);
+      const targetY = getPreviewScrollTop(scroller.scrollTop, scroller.scrollHeight - scroller.clientHeight);
       if (targetY === undefined) return;
       animateTo(container, targetY, 'preview');
     }, 50);
@@ -276,7 +276,7 @@ function App() {
     syncDebounceTimer = setTimeout(() => {
       const container = previewScrollRef.current;
       if (!container) return;
-      const targetEditorPx = getEditorScrollTop(container.scrollTop);
+      const targetEditorPx = getEditorScrollTop(container.scrollTop, container.scrollHeight - container.clientHeight);
       if (targetEditorPx === undefined) return;
       const scroller = document.querySelector('.cm-scroller') as HTMLElement | null;
       if (!scroller) return;
